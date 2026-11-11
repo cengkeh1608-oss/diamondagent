@@ -1,0 +1,15 @@
+{
+  "name": "diamondagent",
+  "version": "1.0.0",
+  "description": "DIAMONDAGENT — generative pixel-art PFP collection on BNB Chain for the Agent ID community. 2,222 free-mint NFTs + $DAG community token.",
+  "license": "MIT",
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.1.0",
+    "solc": "^0.8.26"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-ethers": "^3.0.8",
+    "ethers": "^6.13.4",
+    "hardhat": "^2.22.17"
+  }
+}
