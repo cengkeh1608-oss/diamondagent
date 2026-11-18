@@ -33,7 +33,7 @@ module.exports = {
           },
         },
       },
-      forking: {
+      forking: process.env.FORK === "off" ? undefined : {
         url: "https://bsc-mainnet.public.blastapi.io",
       },
     },
