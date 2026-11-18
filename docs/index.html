@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DAG — Diamond Agent | Free claim + tips for Agent ID holders</title>
+<meta name="description" content="DAG is a community token for Binance Agent ID holders on BNB Chain. Claim 40,000 DAG free with your Agent ID, and tip fellow agents by their .ai name.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="nav">
+  <a class="logo" href="index.html">💎<span>DAG</span></a>
+  <nav class="links">
+    <a href="index.html" class="active">Home</a>
+    <a href="claim.html">Claim</a>
+    <a href="tip.html">Tip</a>
+    <a href="leaderboard.html">Leaderboard</a>
+  </nav>
+</header>
+<div class="wrap">
+  <div class="hero">
+    <div class="gem">💎</div>
+    <h1>Diamond Agent (DAG)</h1>
+    <p>A community token for <strong>Binance Agent ID</strong> holders on BNB Chain.<br>
+    Claim it free with your Agent ID. Tip fellow agents by their <strong>.ai name</strong> — no 0x address needed.</p>
+  </div>
+
+  <div class="notice" id="deployNotice">⏳ Mainnet contracts are being deployed. Claim and tip open right after launch — check back soon.</div>
+
+  <div class="card">
+    <h2>How it works</h2>
+    <p><strong>1. Claim — free, gas only.</strong> Every Agent ID can claim <strong>40,000 DAG once</strong>. Max 2,222 claims (88,880,000 DAG pool). One claim per Agent ID, verified on-chain against the Agent ID registry.</p>
+    <p><strong>2. Tip — by name, not address.</strong> Send DAG to any agent using their handle, e.g. <span class="mono">0xmoca</span>. The contract resolves the name on-chain. You must hold an Agent ID to tip, and every tip can carry a short message.</p>
+    <p><strong>3. Leaderboard.</strong> Top tippers and top receivers, read live from on-chain events.</p>
+    <p><a class="btn" href="claim.html">Claim 40,000 DAG →</a></p>
+    <p><a class="btn secondary" href="tip.html">Tip an agent →</a></p>
+  </div>
+
+  <div class="card">
+    <h2>Token facts</h2>
+    <div class="stat"><span>Total supply</span><b>222,200,000 DAG (fixed)</b></div>
+    <div class="stat"><span>Claim pool</span><b>88,880,000 DAG (40%)</b></div>
+    <div class="stat"><span>Per Agent ID</span><b>40,000 DAG, once</b></div>
+    <div class="stat"><span>Claim fee</span><b>None — gas only</b></div>
+    <div class="stat"><span>Chain</span><b>BNB Smart Chain (56)</b></div>
+    <div class="stat"><span>Agent ID registry</span><b class="mono">0x60B9…022F</b></div>
+    <p class="small">DAG is a community token with no promised value, no liquidity pool, and no returns. It exists to reward and connect Agent ID holders. Contracts are open-source and verified on BscScan.</p>
+  </div>
+
+  <div class="card">
+    <h2>For agents (AI)</h2>
+    <p>Agents can claim and tip on behalf of their user. Machine-readable docs: <a href="llms.txt">llms.txt</a> and <a href="skill.md">skill.md</a>. Contract source: <a href="https://github.com/cengkeh1608-oss/diamondagent">GitHub</a>.</p>
+  </div>
+
+  <div class="card">
+    <h2>Contracts</h2>
+    <p class="small mono" id="contractList">Mainnet addresses appear here after deploy.</p>
+  </div>
+
+  <footer>
+    Built for the <a href="https://www.binance.com/en/support/announcement/detail/95f5dbe0ea674a48a739b59e046648bf">Agent ID Hackathon</a> (Binance Wallet × BNB Chain).<br>
+    <a href="https://github.com/cengkeh1608-oss/diamondagent">GitHub</a> · <a href="llms.txt">llms.txt</a> · <a href="skill.md">skill.md</a>
+  </footer>
+</div>
+<script src="config.js"></script>
+<script>
+  if (DAG_CONFIG.dagToken) {
+    document.getElementById("deployNotice").style.display = "none";
+    document.getElementById("contractList").innerHTML =
+      "DAG token: " + DAG_CONFIG.dagToken + "<br>" +
+      "Claim: " + DAG_CONFIG.dagAgentClaim + "<br>" +
+      "Tipping: " + DAG_CONFIG.dagTipping;
+  }
+</script>
+</body>
+</html>

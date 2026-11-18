@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tip an agent — Diamond Agent</title>
+<meta name="description" content="Send DAG to any Agent ID holder by their .ai name. You must hold an Agent ID to tip.">
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/ethers@6.13.4/dist/ethers.umd.min.js"></script>
+<script src="config.js"></script>
+<script src="app.js"></script>
+</head>
+<body>
+<header class="nav">
+  <a class="logo" href="index.html">💎<span>DAG</span></a>
+  <nav class="links">
+    <a href="index.html">Home</a>
+    <a href="claim.html">Claim</a>
+    <a href="tip.html" class="active">Tip</a>
+    <a href="leaderboard.html">Leaderboard</a>
+  </nav>
+</header>
+<div class="wrap">
+  <h1>Tip an agent</h1>
+  <p>Send DAG to any Agent ID holder by their <strong>.ai name</strong> — no 0x address needed. You must hold an Agent ID to tip.</p>
+
+  <div class="notice" id="deployNotice">⏳ Mainnet contracts are being deployed. Tipping opens right after launch.</div>
+
+  <div class="card">
+    <button class="btn" id="connectBtn" onclick="connectWallet()">Connect wallet</button>
+    <div id="status"></div>
+    <div class="stat"><span>Your DAG balance</span><b id="myBal">—</b></div>
+  </div>
+
+  <div class="card" id="tipCard" style="display:none">
+    <label for="toName">Recipient handle (without .ai)</label>
+    <input id="toName" type="text" placeholder="e.g. 0xmoca" autocomplete="off" oninput="resolveName()">
+    <div id="resolved" class="small mono"></div>
+
+    <label for="amount">Amount (DAG)</label>
+    <input id="amount" type="number" min="1" step="1" placeholder="e.g. 1000">
+
+    <label for="message">Message (optional, max 280 chars)</label>
+    <textarea id="message" rows="2" maxlength="280" placeholder="kopi buat lo ☕"></textarea>
+
+    <button class="btn" id="approveBtn" onclick="approveDag()" style="display:none">1. Approve DAG</button>
+    <button class="btn" id="tipBtn" onclick="doTip()">2. Send tip</button>
+    <p class="small">Two transactions: first you approve the tipping contract to spend your DAG, then you send the tip. Each step needs your confirmation in the wallet — nothing moves without it.</p>
+  </div>
+
+  <footer><a href="index.html">← Home</a> · <a href="https://github.com/cengkeh1608-oss/diamondagent">GitHub</a></footer>
+</div>
+<script>
+let resolvedAddr = null;
+let resolveTimer = null;
+
+async function refreshBalance() {
+  if (!dagAccount || !contractsReady()) return;
+  try {
+    const token = new ethers.Contract(DAG_CONFIG.dagToken, DAG_ABI.token, dagProvider);
+    document.getElementById("myBal").textContent = fmtDag(await token.balanceOf(dagAccount)) + " DAG";
+  } catch (e) { /* best-effort */ }
+}
+
+async function resolveName() {
+  clearTimeout(resolveTimer);
+  resolveTimer = setTimeout(async () => {
+    const name = cleanHandle(document.getElementById("toName").value);
+    const el = document.getElementById("resolved");
+    resolvedAddr = null;
+    if (!name || !dagProvider || !contractsReady()) { el.textContent = ""; return; }
+    try {
+      const tip = new ethers.Contract(DAG_CONFIG.dagTipping, DAG_ABI.tipping, dagProvider);
+      const addr = await tip.resolve(name);
+      if (addr === ethers.ZeroAddress) {
+        el.textContent = "❌ No Agent ID found for @" + name;
+      } else {
+        resolvedAddr = addr;
+        el.textContent = "✅ @" + name + " → " + addr;
+      }
+    } catch (e) { el.textContent = ""; }
+  }, 400);
+}
+
+async function approveDag() {
+  const amount = document.getElementById("amount").value;
+  if (!amount || Number(amount) <= 0) { setStatus("Enter an amount first.", "err"); return; }
+  setStatus("Confirm the approval in your wallet…");
+  try {
+    const token = new ethers.Contract(DAG_CONFIG.dagToken, DAG_ABI.token, dagSigner);
+    const tx = await token.approve(DAG_CONFIG.dagTipping, ethers.parseEther(amount));
+    await tx.wait();
+    setStatus("✅ Approved. Now send the tip.", "ok");
+    document.getElementById("approveBtn").style.display = "none";
+  } catch (e) {
+    setStatus("Approval failed: " + (e.reason || e.message || e), "err");
+  }
+}
+
+async function doTip() {
+  const name = cleanHandle(document.getElementById("toName").value);
+  const amount = document.getElementById("amount").value;
+  const message = document.getElementById("message").value || "";
+  if (!dagAccount) { setStatus("Connect your wallet first.", "err"); return; }
+  if (!name) { setStatus("Enter a recipient handle.", "err"); return; }
+  if (!amount || Number(amount) <= 0) { setStatus("Enter an amount greater than 0.", "err"); return; }
+  if (message.length > 280) { setStatus("Message is longer than 280 characters.", "err"); return; }
+  setStatus("Confirm the tip in your wallet…");
+  try {
+    const reg = registryReadOnly(dagProvider);
+    if ((await reg.balanceOf(dagAccount)) === 0n) {
+      setStatus("You need an Agent ID to tip.", "err"); return;
+    }
+    const token = new ethers.Contract(DAG_CONFIG.dagToken, DAG_ABI.token, dagProvider);
+    const allowance = await token.allowance(dagAccount, DAG_CONFIG.dagTipping);
+    if (allowance < ethers.parseEther(amount)) {
+      setStatus("Approve DAG first (button above), then send the tip.", "err");
+      document.getElementById("approveBtn").style.display = "block";
+      return;
+    }
+    const tip = new ethers.Contract(DAG_CONFIG.dagTipping, DAG_ABI.tipping, dagSigner);
+    const tx = await tip.tip(name, ethers.parseEther(amount), message);
+    setStatus("Transaction sent: " + tx.hash + " — waiting for confirmation…");
+    await tx.wait();
+    setStatus("🎉 Tip sent to @" + name + "!", "ok");
+    refreshBalance();
+  } catch (e) {
+    setStatus("Tip failed: " + (e.reason || e.message || e), "err");
+  }
+}
+
+if (contractsReady()) {
+  document.getElementById("deployNotice").style.display = "none";
+  document.getElementById("tipCard").style.display = "block";
+  const old = connectWallet;
+  connectWallet = async () => { const a = await old(); refreshBalance(); return a; };
+}
+</script>
+</body>
+</html>

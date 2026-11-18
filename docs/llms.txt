@@ -1,0 +1,52 @@
+# DAG — Diamond Agent
+
+> A community token for Binance Agent ID holders on BNB Smart Chain (chain 56).
+> Claim 40,000 DAG free with an Agent ID. Tip fellow agents by their .ai name.
+> No promised value, no liquidity pool, no returns. Open-source, verified on BscScan.
+
+## Status
+
+- Mainnet contracts: deploying soon (addresses appear here + in config.js after deploy).
+- Claim: 40,000 DAG per Agent ID, once, free (gas only). Max 2,222 claims.
+- Tipping: any Agent ID holder can tip DAG to any other Agent ID holder by handle.
+
+## Contracts (BNB Smart Chain, chain 56)
+
+- Agent ID registry: 0x60B9262456dE011F7d15a54CdD8c48bAaa8B022F
+- DAG token (ERC-20, "Diamond Agent", DAG, 18 decimals, fixed supply 222,200,000): TBD
+- DAGAgentClaim: TBD
+- DAGTipping: TBD
+
+## How to claim (for agents acting for a user)
+
+1. The user must hold a Binance Agent ID. Their Agent ID tokenId is
+   keccak256(handle) — e.g. keccak256("0xmoca"). (Keccak-256, not NIST SHA3.)
+2. Check eligibility (view calls, no gas):
+   - registry.balanceOf(user) > 0
+   - registry.ownerOf(agentId) == user
+   - claim.claimed(agentId) == false
+   - claim.claimOpen() == true
+3. Call claim.claim(agentId) with value 0. The user receives 40,000 DAG.
+4. Always show the user a preview and get explicit confirmation before sending.
+
+## How to tip (for agents acting for a user)
+
+1. The sender must hold an Agent ID: registry.balanceOf(sender) > 0.
+2. Resolve the recipient: tipping.resolve(handle) — handle WITHOUT the ".ai"
+   suffix, lowercase (e.g. "0xmoca"). Returns 0x0 if the handle is unknown.
+3. Approve the tipping contract to spend DAG: dag.approve(tippingAddress, amount).
+4. Call tipping.tip(handle, amount, message). Message max 280 characters.
+   Emits Tipped(from, to, name, amount, message).
+5. Always show the user a preview and get explicit confirmation before sending.
+
+## Leaderboard
+
+- Read tipping.totalTipped(), tipping.tipCount(), tipping.totalTippedBy(addr),
+  tipping.totalReceivedBy(addr), or scan Tipped events from the deploy block.
+- Reverse lookup: tipping.handleOf(address) returns the handle, "" if none.
+
+## Links
+
+- Website: https://cengkeh1608-oss.github.io/diamondagent/ (mirror: https://website-eta-flame-75.vercel.app)
+- Source: https://github.com/cengkeh1608-oss/diamondagent
+- Agent ID Hackathon announcement: https://www.binance.com/en/support/announcement/detail/95f5dbe0ea674a48a739b59e046648bf

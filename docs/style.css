@@ -1,0 +1,63 @@
+/* DAG — Diamond Agent. Mobile-first, dark, minimal. */
+:root {
+  --bg: #0b0f14; --card: #121924; --line: #223042; --text: #e8eef4;
+  --muted: #93a3b5; --accent: #4ade80; --accent2: #facc15; --danger: #f87171;
+  --radius: 14px;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--text);
+  font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  line-height: 1.55;
+}
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+.wrap { max-width: 720px; margin: 0 auto; padding: 16px; }
+header.nav {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 16px; border-bottom: 1px solid var(--line);
+  position: sticky; top: 0; background: rgba(11,15,20,.92); backdrop-filter: blur(6px);
+}
+.logo { font-weight: 800; font-size: 20px; letter-spacing: .5px; color: var(--text); }
+.logo span { color: var(--accent2); }
+nav.links a { margin-left: 14px; color: var(--muted); font-size: 14px; }
+nav.links a.active { color: var(--text); font-weight: 700; }
+h1 { font-size: 30px; line-height: 1.2; margin: 18px 0 8px; }
+h2 { font-size: 20px; margin: 26px 0 8px; }
+p, li { color: var(--muted); font-size: 15px; }
+p strong, li strong { color: var(--text); }
+.card {
+  background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 16px; margin: 14px 0;
+}
+.hero { text-align: center; padding: 28px 8px 8px; }
+.hero .gem { font-size: 52px; }
+.btn {
+  display: inline-block; background: var(--accent); color: #06110a; font-weight: 700;
+  border: 0; border-radius: 10px; padding: 12px 20px; font-size: 15px; cursor: pointer;
+  width: 100%; margin-top: 10px;
+}
+.btn.secondary { background: transparent; color: var(--accent); border: 1px solid var(--accent); }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+input, textarea {
+  width: 100%; background: #0b0f14; color: var(--text); border: 1px solid var(--line);
+  border-radius: 10px; padding: 12px; font-size: 15px; margin: 6px 0 12px;
+}
+label { font-size: 13px; color: var(--muted); font-weight: 600; }
+.stat { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--line); }
+.stat:last-child { border-bottom: 0; }
+.stat b { color: var(--text); }
+.notice {
+  background: #1a1405; border: 1px solid #6b5310; color: #fde68a;
+  border-radius: var(--radius); padding: 12px 16px; margin: 14px 0; font-size: 14px;
+}
+.ok { background: #07170d; border: 1px solid #14532d; color: #86efac; }
+.err { background: #1f0a0a; border: 1px solid #7f1d1d; color: #fca5a5; }
+.mono { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 12.5px; word-break: break-all; }
+.small { font-size: 13px; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th, td { text-align: left; padding: 8px 4px; border-bottom: 1px solid var(--line); }
+th { color: var(--muted); font-size: 12px; text-transform: uppercase; }
+footer { text-align: center; color: var(--muted); font-size: 13px; padding: 28px 0 40px; }
+footer a { color: var(--muted); }
+#status { min-height: 20px; }
